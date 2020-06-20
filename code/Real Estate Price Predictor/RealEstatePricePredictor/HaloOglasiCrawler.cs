@@ -21,7 +21,7 @@ namespace RealEstatePricePredictor
         private static int idGen = 0;
         private static List<HaloOglasiCrawlerOptions> HocOptions = new List<HaloOglasiCrawlerOptions>();
         private static readonly string RealEstateLinksFilePath = @"real-estate-links.txt";
-        
+
         public HaloOglasiCrawler()
         {
             SetupProxy();
@@ -61,33 +61,33 @@ namespace RealEstatePricePredictor
         {
             await Task.Run(async () =>
             {
-                var re = await ParseRealEstate("https://www.halooglasi.com/nekretnine/prodaja-kuca/sd-luksuzna-vila/5425635644763?kid=4&sid=1592140358977");
-                Console.WriteLine(re.ToString());
-                
-                //ReadRealEstateLinks();
-                //for (int i = 0; i< 10; ++i)
-                //{
-                //    var re = await ParseRealEstate(RealEstatePages[i]);
-                //    Console.WriteLine(re.ToString());
-                //}
-                //for (int i = 15880; i < 15890; ++i)
-                //{
-                //    var re = await ParseRealEstate(RealEstatePages[i]);
-                //    Console.WriteLine(re.ToString());
-                //}
-                //for (int i = 21330; i < 21340; ++i)
-                //{
-                //    var re = await ParseRealEstate(RealEstatePages[i]);
-                //    Console.WriteLine(re.ToString());
-                //}
-                //for (int i = 22222; i < 22232; ++i)
-                //{
-                //    var re = await ParseRealEstate(RealEstatePages[i]);
-                //    Console.WriteLine(re.ToString());
-                //}
+                ReadRealEstateLinks();
+                using (var db = new RealEstateContext())
+                {
+                    var errorCount = 0;
+                    for (int i = 0; i < RealEstatePages.Count; ++i)
+                    {
+                        try
+                        {
+                            var re = await ParseRealEstate(RealEstatePages[i]);
+                            Console.WriteLine($"{i} -> {re.Url} OK");
+                            db.RealEstates.Add(re);
+                            if (i % 100 == 0)
+                            {
+                                db.SaveChanges();
+                                Console.WriteLine($"Reached {i} rows, changes saved");
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            ++errorCount;
+                            Console.WriteLine($"Error occured at row {i}");
+                        }
+                    }
+                    Console.WriteLine("Finished. Error count = " + errorCount);
+                }
             });
         }
-
 
         public void Dispose()
         {
@@ -170,7 +170,7 @@ namespace RealEstatePricePredictor
                     RealEstatePages.Add(page);
                 }
 
-                Console.Write("Loaded all");
+                Console.WriteLine("Real estate links loaded");
             }
         }
     }

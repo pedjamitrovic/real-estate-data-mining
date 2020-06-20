@@ -23,69 +23,121 @@ namespace RealEstatePricePredictor
         {
             var re = new RealEstate();
             
-            var priceNode = document.DocumentNode.SelectSingleNode("//span[@class=\"offer-price-value\"]");
+            var priceNode = document.DocumentNode.SelectSingleNode("//span[@class='offer-price-value']");
             if (priceNode != null && int.TryParse(priceNode.GetDirectInnerText().Replace(".", ""), out int price))
             {
                 re.Price = price;
             }
 
-            var breadcrumbNode = document.DocumentNode.SelectSingleNode("//ol[@id=\"main-breadcrumb\"]");
+            var breadcrumbNode = document.DocumentNode.SelectSingleNode("//ol[@id='main-breadcrumb']");
             var adInfo = breadcrumbNode.Descendants("span").Skip(2).First().GetDirectInnerText();
             re.OfferType = adInfo.Split(' ')[0].Equals("prodaja", StringComparison.OrdinalIgnoreCase) ? OfferType.Selling : OfferType.Rental;
             re.HousingType = adInfo.Split(' ')[1].Equals("stanova", StringComparison.OrdinalIgnoreCase) ? HousingType.Apartment : HousingType.House;
 
-            var cityNode = document.DocumentNode.SelectSingleNode("//span[@id=\"plh2\"]");
+            var cityNode = document.DocumentNode.SelectSingleNode("//span[@id='plh2']");
             if (cityNode != null) re.City = cityNode.GetDirectInnerText();
 
-            var neighborhoodNode = document.DocumentNode.SelectSingleNode("//span[@id=\"plh4\"]");
+            var neighborhoodNode = document.DocumentNode.SelectSingleNode("//span[@id='plh4']");
             if (neighborhoodNode != null) re.Neighborhood = neighborhoodNode.GetDirectInnerText();
 
-            var quadratureNode = document.DocumentNode.SelectSingleNode("//span[@id=\"plh11\"]");
-            if (quadratureNode != null && int.TryParse(quadratureNode.GetDirectInnerText().Split(' ')[0], out int quadrature))
-            {
-                re.Quadrature = quadrature;
-            }
+            var prominentListItems = document.DocumentNode.SelectNodes("//div[@class='prominent']//li");
 
-            var roomCountNode = document.DocumentNode.SelectSingleNode("//span[@id=\"plh12\"]");
-            if (roomCountNode != null && double.TryParse(roomCountNode.GetDirectInnerText().Replace("+", ""), NumberStyles.Any, CultureInfo.InvariantCulture, out double roomCount))
+            foreach (var li in prominentListItems)
             {
-                re.RoomCount = roomCount;
-            }
-
-            var heatingTypeNode = document.DocumentNode.SelectSingleNode("//span[@id=\"plh17\"]");
-            if (heatingTypeNode != null) re.HeatingType = heatingTypeNode.GetDirectInnerText();
-
-            var floorNode = document.DocumentNode.SelectSingleNode("//span[@id=\"plh18\"]");
-            if (floorNode != null)
-            {
-                var floorString = floorNode.GetDirectInnerText();
-                if (floorLiterals.Contains(floorString))
+                var fieldNameNode = li.SelectSingleNode("span[@class='field-name']");
+                if (fieldNameNode != null)
                 {
-                    floorString = "0";
+                    var fieldValueNode = li.SelectSingleNode("span[@class='field-value']/span");
+                    var fieldName = fieldNameNode.GetDirectInnerText();
+                    if (fieldValueNode != null)
+                    {
+                        switch (fieldName.ToLower())
+                        {
+                            case "kvadratura":
+                                if (int.TryParse(fieldValueNode.GetDirectInnerText().Split(' ')[0], out int quadrature))
+                                {
+                                    re.Quadrature = quadrature;
+                                }
+                                break;
+                            case "broj soba":
+                                if (double.TryParse(fieldValueNode.GetDirectInnerText().Replace("+", ""), NumberStyles.Any, CultureInfo.InvariantCulture, out double roomCount))
+                                {
+                                    re.RoomCount = roomCount;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
-                if (int.TryParse(floorString, out int floor)) re.Floor = floor;
             }
 
-            var totalFloorsNode = document.DocumentNode.SelectSingleNode("//span[@id=\"plh19\"]");
-            if (totalFloorsNode != null)
+            var basicViewDivs = document.DocumentNode.SelectNodes("//div[@class='basic-view']/div");
+
+            foreach (var basicViewDiv in basicViewDivs)
             {
-                var totalFloorsString = totalFloorsNode.GetDirectInnerText();
-                if (floorLiterals.Contains(totalFloorsString))
+                var innerDivs = basicViewDiv.SelectNodes("div");
+                var key = innerDivs[0]?.GetDirectInnerText();
+
+                if (key != null)
                 {
-                    totalFloorsString = "0";
+                    var valueNode = innerDivs[1].SelectSingleNode("span");
+                    if (valueNode != null)
+                    {
+
+                        switch (key.ToLower())
+                        {
+                            case "grejanje":
+                                re.HeatingType = valueNode.GetDirectInnerText();
+                                break;
+                            case "sprat":
+                                var floorString = valueNode.GetDirectInnerText();
+                                if (floorLiterals.Contains(floorString))
+                                {
+                                    floorString = "0";
+                                }
+                                if (int.TryParse(floorString, out int floor)) re.Floor = floor;
+                                break;
+                            case "ukupna spratnost":
+                                var totalFloorsString = valueNode.GetDirectInnerText();
+                                if (floorLiterals.Contains(totalFloorsString))
+                                {
+                                    totalFloorsString = "0";
+                                }
+                                if (int.TryParse(totalFloorsString, out int totalFloors)) re.TotalFloors = totalFloors;
+                                break;
+                            case "površina placa":
+                                var value = valueNode.GetDirectInnerText();
+                                if (value.Split(' ')[1].StartsWith("m"))
+                                {
+                                    int.TryParse(value.Split(' ')[0].Replace(".", ""), out int landSize);
+                                    re.LandSize = landSize;
+                                }
+                                else
+                                {
+                                    double.TryParse(value.Split(' ')[0], NumberStyles.Any, CultureInfo.GetCultureInfo("DE-de"), out double landSize);
+                                    re.LandSize = Convert.ToInt32(landSize * 100);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
-                if (int.TryParse(totalFloorsString, out int totalFloors)) re.TotalFloors = totalFloors;
             }
 
-            var landSizeNode = document.DocumentNode.SelectSingleNode("//span[@id=\"plh21\"]");
-            if(landSizeNode != null && double.TryParse(landSizeNode.GetDirectInnerText().Split(' ')[0].Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double landSize))
+            var flagNodes = document.DocumentNode.SelectNodes("//span[contains(@class, 'flag-attribute')]/label");
+            if (flagNodes != null)
             {
-                re.LandSize = landSize;
+                foreach (var flagNode in flagNodes)
+                {
+                    if (flagNode?.GetDirectInnerText().ToLower() == "uknjižen")
+                    {
+                        re.Registered = true;
+                        break;
+                    }
+                }
             }
-
-            var registeredNode = document.DocumentNode.SelectSingleNode("//span[@id=\"plh22\"]");
-            if (registeredNode != null) re.Registered = true;
-            
             return re;
         } 
     }

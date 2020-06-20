@@ -16,7 +16,7 @@ namespace RealEstatePricePredictor
         public string Neighborhood { get; set; }
         public int Quadrature { get; set; }
         public int? YearBuilt { get; set; } // Nema
-        public double? LandSize { get; set; }
+        public int? LandSize { get; set; }
         public int? Floor { get; set; }
         public int? TotalFloors { get; set; }
         public bool Registered { get; set; }
