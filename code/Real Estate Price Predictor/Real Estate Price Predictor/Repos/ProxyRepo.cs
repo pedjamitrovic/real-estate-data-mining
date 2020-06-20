@@ -127,7 +127,6 @@ namespace Real_Estate_Price_Predictor.Repos
                 foreach (var proxy in proxies)
                 {
                     Buffer.Add(proxy);
-                    Console.WriteLine(proxy);
                 }
             }
         }

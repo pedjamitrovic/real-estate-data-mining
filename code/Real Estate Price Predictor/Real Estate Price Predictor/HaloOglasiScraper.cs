@@ -1,6 +1,8 @@
 ﻿using HtmlAgilityPack;
+using Real_Estate_Price_Predictor.Model;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -9,12 +11,22 @@ namespace Real_Estate_Price_Predictor
     class HaloOglasiScraper
     {
         private static string[] floorLiterals = { "sut", "psut", "vpr", "pr" };
+        public List<string> ScrapeLinks(HtmlDocument document)
+        {
+            List<string> links = new List<string>();
+            foreach (var node in document.DocumentNode.SelectNodes("//h3[@class='product-title']"))
+            {
+                links.Add(node.FirstChild.GetAttributeValue("href", ""));
+            }
+            return links;
+        }
+ 
         public RealEstate ScrapeRealEstate(HtmlDocument document)
         {
             var re = new RealEstate();
             
             var priceNode = document.DocumentNode.SelectSingleNode("//span[@class=\"offer-price-value\"]");
-            if (priceNode != null && double.TryParse(priceNode.GetDirectInnerText(), out double price))
+            if (priceNode != null && int.TryParse(priceNode.GetDirectInnerText().Replace(".", ""), out int price))
             {
                 re.Price = price;
             }
@@ -37,7 +49,7 @@ namespace Real_Estate_Price_Predictor
             }
 
             var roomCountNode = document.DocumentNode.SelectSingleNode("//span[@id=\"plh12\"]");
-            if (roomCountNode != null && double.TryParse(roomCountNode.GetDirectInnerText().Replace("+", ""), out double roomCount))
+            if (roomCountNode != null && double.TryParse(roomCountNode.GetDirectInnerText().Replace("+", ""), NumberStyles.Any, CultureInfo.InvariantCulture, out double roomCount))
             {
                 re.RoomCount = roomCount;
             }
@@ -68,7 +80,7 @@ namespace Real_Estate_Price_Predictor
             }
 
             var landSizeNode = document.DocumentNode.SelectSingleNode("//span[@id=\"plh21\"]");
-            if(landSizeNode != null && double.TryParse(landSizeNode.GetDirectInnerText(), out double landSize))
+            if(landSizeNode != null && double.TryParse(landSizeNode.GetDirectInnerText().Split(" ")[0].Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double landSize))
             {
                 re.LandSize = landSize;
             }

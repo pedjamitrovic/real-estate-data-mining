@@ -10,23 +10,24 @@ namespace Real_Estate_Price_Predictor
         static void Main(string[] args)
         {
             ProxyRepo.Instance.Init();
-            StartAsync();
+            ScrapeAsync();
             Console.ReadLine();
         }
-        public static async void StartAsync()
+
+        public static async void CrawlAsync()
         {
-            List<Task> tasks = new List<Task>();
-            for (int i = 0; i < 4; ++i)
+            using (var crawler = new HaloOglasiCrawler())
             {
-                tasks.Add(Task.Run(async () =>
-                {
-                    using (var crawler = new HaloOglasiCrawler())
-                    {
-                        await crawler.StartCrawling();
-                    }
-                }));
+                await crawler.CrawlRealEstatePages();
             }
-            await Task.WhenAll(tasks);
+        }
+
+        public static async void ScrapeAsync()
+        {
+            using (var crawler = new HaloOglasiCrawler())
+            {
+                await crawler.ParseRealEstates();
+            }
         }
     }
 }
