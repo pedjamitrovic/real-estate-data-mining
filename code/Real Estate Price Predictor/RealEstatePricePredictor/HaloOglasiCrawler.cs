@@ -12,7 +12,6 @@ namespace RealEstatePricePredictor
     class HaloOglasiCrawler : IDisposable
     {
         public List<string> RealEstatePages { get; } = new List<string>();
-        public List<RealEstate> RealEstates { get; } = new List<RealEstate>();
         public ChromeDriver Driver { get; set; }
         public ChromeOptions ChromeOptions { get; set; }
 
@@ -65,23 +64,34 @@ namespace RealEstatePricePredictor
                 using (var db = new RealEstateContext())
                 {
                     var errorCount = 0;
-                    for (int i = 0; i < RealEstatePages.Count; ++i)
+                    for (int i = 22001; i < RealEstatePages.Count; ++i)
                     {
                         try
                         {
                             var re = await ParseRealEstate(RealEstatePages[i]);
-                            Console.WriteLine($"{i} -> {re.Url} OK");
-                            db.RealEstates.Add(re);
-                            if (i % 100 == 0)
+                            if (re != null)
                             {
-                                db.SaveChanges();
-                                Console.WriteLine($"Reached {i} rows, changes saved");
+                                Console.WriteLine($"{i} -> {re.Url} OK");
+                                db.RealEstates.Add(re);
+                            }
+                            else
+                            {
+                                Console.WriteLine($"{i} -> {RealEstatePages[i]} NOT FOUND");
                             }
                         }
                         catch (Exception)
                         {
                             ++errorCount;
-                            Console.WriteLine($"Error occured at row {i}");
+                            Console.WriteLine($"{i} -> {RealEstatePages[i]} ERROR");
+                        }
+                        finally
+                        {
+                            if (i % 100 == 0)
+                            {
+                                db.SaveChanges();
+                                Console.WriteLine($"SAVING CHANGES TO DATABASE");
+                            }
+                            UseNewProxy();
                         }
                     }
                     Console.WriteLine("Finished. Error count = " + errorCount);
@@ -91,7 +101,18 @@ namespace RealEstatePricePredictor
 
         public void Dispose()
         {
-            Driver.Close();
+            try
+            {
+                Driver.Close();
+            }
+            catch (Exception)
+            {
+
+            }
+            finally
+            {
+                Driver.Quit();
+            }
         }
 
         private void SetupProxy()
@@ -144,18 +165,25 @@ namespace RealEstatePricePredictor
         {
             return Task.Run(() =>
             {
-                Driver.Navigate().GoToUrl(url);
+                try
+                {
+                    Driver.Navigate().GoToUrl(url);
 
-                var htmlDocument = new HtmlDocument();
-                htmlDocument.LoadHtml(Driver.PageSource);
+                    var htmlDocument = new HtmlDocument();
+                    htmlDocument.LoadHtml(Driver.PageSource);
 
-                var scraper = new HaloOglasiScraper();
+                    var scraper = new HaloOglasiScraper();
 
-                var realEstate = scraper.ScrapeRealEstate(htmlDocument);
+                    var realEstate = scraper.ScrapeRealEstate(htmlDocument);
 
-                realEstate.Url = url;
+                    if (realEstate != null) realEstate.Url = url;
 
-                return realEstate;
+                    return realEstate;
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
             });
         }
 

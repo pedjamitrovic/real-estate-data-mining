@@ -24,9 +24,9 @@ namespace RealEstatePricePredictor
             var re = new RealEstate();
             
             var priceNode = document.DocumentNode.SelectSingleNode("//span[@class='offer-price-value']");
-            if (priceNode != null && int.TryParse(priceNode.GetDirectInnerText().Replace(".", ""), out int price))
+            if (priceNode != null && double.TryParse(priceNode.GetDirectInnerText(), NumberStyles.Any, CultureInfo.GetCultureInfo("DE-de"), out double price))
             {
-                re.Price = price;
+                re.Price = Convert.ToInt32(price);
             }
 
             var breadcrumbNode = document.DocumentNode.SelectSingleNode("//ol[@id='main-breadcrumb']");
@@ -42,6 +42,8 @@ namespace RealEstatePricePredictor
 
             var prominentListItems = document.DocumentNode.SelectNodes("//div[@class='prominent']//li");
 
+            if (prominentListItems == null) return null; // Oglas vise ne postoji
+
             foreach (var li in prominentListItems)
             {
                 var fieldNameNode = li.SelectSingleNode("span[@class='field-name']");
@@ -54,9 +56,9 @@ namespace RealEstatePricePredictor
                         switch (fieldName.ToLower())
                         {
                             case "kvadratura":
-                                if (int.TryParse(fieldValueNode.GetDirectInnerText().Split(' ')[0], out int quadrature))
+                                if (double.TryParse(fieldValueNode.GetDirectInnerText().Split(' ')[0], NumberStyles.Any, CultureInfo.GetCultureInfo("DE-de"), out double quadrature))
                                 {
-                                    re.Quadrature = quadrature;
+                                    re.Quadrature = Convert.ToInt32(quadrature);
                                 }
                                 break;
                             case "broj soba":
@@ -84,14 +86,13 @@ namespace RealEstatePricePredictor
                     var valueNode = innerDivs[1].SelectSingleNode("span");
                     if (valueNode != null)
                     {
-
                         switch (key.ToLower())
                         {
                             case "grejanje":
                                 re.HeatingType = valueNode.GetDirectInnerText();
                                 break;
                             case "sprat":
-                                var floorString = valueNode.GetDirectInnerText();
+                                var floorString = valueNode.GetDirectInnerText().ToLower();
                                 if (floorLiterals.Contains(floorString))
                                 {
                                     floorString = "0";
@@ -99,7 +100,7 @@ namespace RealEstatePricePredictor
                                 if (int.TryParse(floorString, out int floor)) re.Floor = floor;
                                 break;
                             case "ukupna spratnost":
-                                var totalFloorsString = valueNode.GetDirectInnerText();
+                                var totalFloorsString = valueNode.GetDirectInnerText().ToLower();
                                 if (floorLiterals.Contains(totalFloorsString))
                                 {
                                     totalFloorsString = "0";
@@ -110,8 +111,8 @@ namespace RealEstatePricePredictor
                                 var value = valueNode.GetDirectInnerText();
                                 if (value.Split(' ')[1].StartsWith("m"))
                                 {
-                                    int.TryParse(value.Split(' ')[0].Replace(".", ""), out int landSize);
-                                    re.LandSize = landSize;
+                                    double.TryParse(value.Split(' ')[0], NumberStyles.Any, CultureInfo.GetCultureInfo("DE-de"), out double landSize);
+                                    re.LandSize = Convert.ToInt32(landSize);
                                 }
                                 else
                                 {
