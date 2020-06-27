@@ -1,0 +1,86 @@
+2)
+
+a.
+SELECT COUNT(*) FROM RealEstates WHERE OfferType = 0;
+SELECT COUNT(*) FROM RealEstates WHERE OfferType = 1;
+
+b.
+SELECT City, COUNT(*) as SellingCount FROM RealEstates WHERE OfferType = 0 GROUP BY City ORDER BY SellingCount DESC;
+
+c.
+SELECT COUNT(*) FROM RealEstates WHERE HousingType = 0 AND Registered = 0;
+SELECT COUNT(*) FROM RealEstates WHERE HousingType = 0 AND Registered = 1;
+SELECT COUNT(*) FROM RealEstates WHERE HousingType = 1 AND Registered = 0;
+SELECT COUNT(*) FROM RealEstates WHERE HousingType = 1 AND Registered = 1;
+
+d.
+SELECT TOP(20) * FROM RealEstates WHERE HousingType = 0 ORDER BY Price DESC;
+SELECT TOP(20) * FROM RealEstates WHERE HousingType = 1 ORDER BY Price DESC;
+
+e.
+SELECT TOP(100) * FROM RealEstates WHERE HousingType = 0 AND OfferType = 1 ORDER BY Price DESC;
+SELECT TOP(100) * FROM RealEstates WHERE HousingType = 1 AND OfferType = 1 ORDER BY Price DESC;
+
+f.
+SELECT * FROM RealEstates WHERE YearBuilt = 2019 AND OfferType = 0 ORDER BY Price DESC;
+SELECT * FROM RealEstates WHERE YearBuilt = 2019 AND OfferType = 1 ORDER BY Price DESC;
+
+g.
+SELECT * FROM RealEstates WHERE RoomCount = (SELECT MAX(RoomCount) FROM RealEstates);
+SELECT * FROM RealEstates WHERE BathroomCount = (SELECT MAX(BathroomCount) FROM RealEstates);
+SELECT * FROM RealEstates WHERE HousingType = 1 AND LandSize = (SELECT MAX(LandSize) FROM RealEstates);
+
+3)
+
+a.
+SELECT TOP(8) Neighborhood, COUNT(*) as TotalCount FROM RealEstates WHERE City = 'Beograd' GROUP BY Neighborhood ORDER BY TotalCount DESC;
+
+b.
+SELECT '-35' as Quadrature, COUNT(*) as TotalCount FROM RealEstates WHERE HousingType = 0 AND OfferType = 0 AND Quadrature < 36
+UNION
+SELECT '36-50', COUNT(*) FROM RealEstates WHERE HousingType = 0 AND OfferType = 0 AND Quadrature BETWEEN 36 AND 50
+UNION
+SELECT '51-65', COUNT(*) FROM RealEstates WHERE HousingType = 0 AND OfferType = 0 AND Quadrature BETWEEN 51 AND 65
+UNION
+SELECT '66-80', COUNT(*) FROM RealEstates WHERE HousingType = 0 AND OfferType = 0 AND Quadrature BETWEEN 66 AND 80
+UNION
+SELECT '81-95', COUNT(*) FROM RealEstates WHERE HousingType = 0 AND OfferType = 0 AND Quadrature BETWEEN 81 AND 95
+UNION
+SELECT '96-110', COUNT(*) FROM RealEstates WHERE HousingType = 0 AND OfferType = 0 AND Quadrature BETWEEN 96 AND 110
+UNION
+SELECT '111+', COUNT(*) FROM RealEstates WHERE HousingType = 0 AND OfferType = 0 AND Quadrature > 110;
+
+c.
+SELECT '1950-1959' as Decade, COUNT(*) as TotalCount FROM RealEstates WHERE YearBuilt BETWEEN 1950 AND 1959
+UNION
+SELECT '1960-1969', COUNT(*) FROM RealEstates WHERE YearBuilt BETWEEN 1960 AND 1969
+UNION
+SELECT '1970-1979', COUNT(*) FROM RealEstates WHERE YearBuilt BETWEEN 1970 AND 1979
+UNION
+SELECT '1980-1989', COUNT(*) FROM RealEstates WHERE YearBuilt BETWEEN 1980 AND 1989
+UNION
+SELECT '1990-1999', COUNT(*) FROM RealEstates WHERE YearBuilt BETWEEN 1990 AND 1999
+UNION
+SELECT '2000-2009', COUNT(*) FROM RealEstates WHERE YearBuilt BETWEEN 2000 AND 2009
+UNION
+SELECT '2010-2019', COUNT(*) FROM RealEstates WHERE YearBuilt BETWEEN 2010 AND 2019
+
+d.
+SELECT TOP(5) City, COUNT(*) as TotalCount FROM RealEstates GROUP BY City ORDER BY TotalCount DESC;
+
+SELECT 'Prodaja' as OfferType, COUNT(*) as TotalCount FROM RealEstates WHERE City = 'Beograd' AND OfferType = 0
+UNION
+SELECT 'Iznajmljivanje', COUNT(*) FROM RealEstates WHERE City = 'Beograd' AND OfferType = 1;
+
+SELECT City, OfferType, COUNT(*) as TotalCount FROM RealEstates WHERE City IN (SELECT TOP(5) City FROM RealEstates GROUP BY City ORDER BY COUNT(*) DESC) GROUP BY City, OfferType;
+
+e.
+SELECT '-49999' as Price, COUNT(*) as TotalCount FROM RealEstates WHERE OfferType = 0 AND Price < 50000
+UNION
+SELECT '50000-99999', COUNT(*) FROM RealEstates WHERE OfferType = 0 AND Price BETWEEN 50000 AND 99999
+UNION
+SELECT '100000-149999', COUNT(*) FROM RealEstates WHERE OfferType = 0 AND Price BETWEEN 100000 AND 149999
+UNION
+SELECT '150000-199999', COUNT(*) FROM RealEstates WHERE OfferType = 0 AND Price BETWEEN 150000 AND 199999
+UNION
+SELECT '200000+', COUNT(*) FROM RealEstates WHERE OfferType = 0 AND Price > 199999

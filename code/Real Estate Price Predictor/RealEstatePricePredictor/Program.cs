@@ -9,10 +9,9 @@ namespace RealEstatePricePredictor
         static void Main(string[] args)
         {
             ProxyRepo.Instance.Init();
+            // CrawlAsync().Wait();
             ScrapeAsync().Wait();
             Console.ReadLine();
-            //var query = from estate in db.RealEstates select re.City;
-            //query.ToList();
         }
 
         public static async Task CrawlAsync()

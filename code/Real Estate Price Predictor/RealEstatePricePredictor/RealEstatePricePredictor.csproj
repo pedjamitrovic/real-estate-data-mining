@@ -63,8 +63,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\RealEstateContext.cs" />
-    <Compile Include="HaloOglasiCrawler.cs" />
-    <Compile Include="HaloOglasiScraper.cs" />
+    <Compile Include="CrawlerScraper\HaloOglasiCrawler.cs" />
+    <Compile Include="CrawlerScraper\HaloOglasiScraper.cs" />
     <Compile Include="Model\HaloOglasiCrawlerOptions.cs" />
     <Compile Include="Model\RealEstate.cs" />
     <Compile Include="Program.cs" />
