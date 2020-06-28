@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Linq;
+using System.Device.Location;
 
 namespace RealEstatePricePredictor
 {
@@ -8,9 +8,13 @@ namespace RealEstatePricePredictor
     {
         static void Main(string[] args)
         {
-            ProxyRepo.Instance.Init();
+            // Phase 1
+            // ProxyRepo.Instance.Init();
             // CrawlAsync().Wait();
-            ScrapeAsync().Wait();
+            // ScrapeAsync().Wait();
+
+            // Phase 4
+            new LinearRegression(100, 100, 100, 0.2);
             Console.ReadLine();
         }
 

@@ -17,3 +17,7 @@ D:\Master\PSZ\real-estate-data-mining\code\Real Estate Price Predictor\RealEstat
 D:\Master\PSZ\real-estate-data-mining\code\Real Estate Price Predictor\RealEstatePricePredictor\obj\Debug\RealEstatePricePredictor.csproj.CopyComplete
 D:\Master\PSZ\real-estate-data-mining\code\Real Estate Price Predictor\RealEstatePricePredictor\obj\Debug\RealEstatePricePredictor.exe
 D:\Master\PSZ\real-estate-data-mining\code\Real Estate Price Predictor\RealEstatePricePredictor\obj\Debug\RealEstatePricePredictor.pdb
+D:\Master\PSZ\real-estate-data-mining\code\Real Estate Price Predictor\RealEstatePricePredictor\bin\Debug\System.Device.Portable.dll
+D:\Master\PSZ\real-estate-data-mining\code\Real Estate Price Predictor\RealEstatePricePredictor\obj\Debug\RealEstatePricePredictor.Migrations.InitialCreate.resources
+D:\Master\PSZ\real-estate-data-mining\code\Real Estate Price Predictor\RealEstatePricePredictor\obj\Debug\RealEstatePricePredictor.csproj.GenerateResource.cache
+D:\Master\PSZ\real-estate-data-mining\code\Real Estate Price Predictor\RealEstatePricePredictor\obj\Debug\RealEstatePricePredictor.Migrations.NeighborhoodDistance.resources

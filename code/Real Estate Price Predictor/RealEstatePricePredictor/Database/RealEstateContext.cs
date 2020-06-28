@@ -15,5 +15,6 @@ namespace RealEstatePricePredictor
         }
 
         public virtual DbSet<RealEstate> RealEstates { get; set; }
+        public virtual DbSet<NeighborhoodDistance> NeighborhoodDistances { get; set; }
     }
 }
