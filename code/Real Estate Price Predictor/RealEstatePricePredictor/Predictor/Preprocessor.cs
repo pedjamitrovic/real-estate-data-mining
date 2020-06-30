@@ -6,10 +6,11 @@ namespace RealEstatePricePredictor
 {
     public class Preprocessor
     {
-        public List<Instance> train;
-        public List<Instance> test;
+        public List<Instance> Train;
+        public List<Instance> Test;
         public Preprocessor(double testSize)
         {
+            Console.WriteLine("Preprocessing started");
             using (var db = new RealEstateContext())
             {
                 var flatsForSale = db.RealEstates.Where(re => re.City == "Beograd" && re.HousingType == 0 && re.OfferType == 0);
@@ -26,18 +27,22 @@ namespace RealEstatePricePredictor
                     .AsEnumerable()
                     .Select(e => new Instance
                     {
-                        Distance = e.Distance,
-                        Quadrature = e.Quadrature,
-                        Registered = Convert.ToDouble(e.Registered),
-                        Floor = Convert.ToDouble(e.Floor),
-                        RoomCount = Convert.ToDouble(e.RoomCount),
-
-                        Price = e.Price
+                        Data = new double[]
+                        {
+                            e.Price,
+                            e.Distance,
+                            e.Quadrature,
+                            Convert.ToDouble(e.Registered),
+                            Convert.ToDouble(e.Floor),
+                            Convert.ToDouble(e.RoomCount),
+                        }
                     });
+
                 var instancesCount = instances.Count();
-                train = instances.Take(totalCount - splitIndex).ToList();
-                test = instances.Skip(totalCount - splitIndex).ToList();
+                Train = instances.Take(totalCount - splitIndex).ToList();
+                Test = instances.Skip(totalCount - splitIndex).ToList();
             }
+            Console.WriteLine("Preprocessing finished");
         }
     }
 }

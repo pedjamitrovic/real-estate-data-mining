@@ -8,17 +8,23 @@ namespace RealEstatePricePredictor
 {
     public class Instance
     {
-        public double Distance;
-        public double Quadrature;
-        public double Registered;
-        public double Floor;
-        public double RoomCount;
-
-        public double Price;
+        //public double Price;
+        //public double Distance;
+        //public double Quadrature;
+        //public double Registered;
+        //public double Floor;
+        //public double RoomCount;
+        public double[] Data;
 
         public new String ToString()
         {
-            return $"{Distance.ToString("0.##")} {Quadrature} {Registered} {Floor} {RoomCount} {Price}";
+            var sb = new StringBuilder();
+            foreach (var field in Data)
+            {
+                sb.Append($"{field.ToString("0.##")} ");
+            }
+            sb.Remove(sb.Length - 1, 1);
+            return sb.ToString();
         }
     }
 }

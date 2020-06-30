@@ -82,6 +82,7 @@
     <Compile Include="Model\NeighborhoodDistance.cs" />
     <Compile Include="Model\RealEstate.cs" />
     <Compile Include="Predictor\LinearRegression.cs" />
+    <Compile Include="Predictor\Metrics.cs" />
     <Compile Include="Predictor\Preprocessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

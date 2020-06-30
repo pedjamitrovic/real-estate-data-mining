@@ -14,7 +14,12 @@ namespace RealEstatePricePredictor
             // ScrapeAsync().Wait();
 
             // Phase 4
-            new LinearRegression(100, 100, 100, 0.2);
+            var model = new LinearRegression(500, 50, 1e-5, 0.2);
+            model.Fit();
+            model.PredictAndLogTestResults();
+
+            // Phase 5
+
             Console.ReadLine();
         }
 
