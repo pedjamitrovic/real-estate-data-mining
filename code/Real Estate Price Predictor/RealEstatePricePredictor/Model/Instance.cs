@@ -16,6 +16,31 @@ namespace RealEstatePricePredictor
         //public double RoomCount;
         public double[] Data;
 
+        public int PriceRange
+        {
+            get
+            {
+                double val = Data[0];
+                if (val < 50000)
+                {
+                    return 0;
+                }
+                else if (val < 100000)
+                {
+                    return 1;
+                }
+                else if (val < 150000)
+                {
+                    return 2;
+                }
+                else if (val < 200000)
+                {
+                    return 3;
+                }
+                else return 4;
+            }
+        }
+
         public new String ToString()
         {
             var sb = new StringBuilder();

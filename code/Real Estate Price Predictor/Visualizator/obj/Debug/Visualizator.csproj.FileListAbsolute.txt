@@ -23,3 +23,4 @@ D:\Master\PSZ\real-estate-data-mining\code\Real Estate Price Predictor\Visualiza
 D:\Master\PSZ\real-estate-data-mining\code\Real Estate Price Predictor\Visualizator\obj\Debug\Visualizator.csproj.CopyComplete
 D:\Master\PSZ\real-estate-data-mining\code\Real Estate Price Predictor\Visualizator\obj\Debug\Visualizator.exe
 D:\Master\PSZ\real-estate-data-mining\code\Real Estate Price Predictor\Visualizator\obj\Debug\Visualizator.pdb
+D:\Master\PSZ\real-estate-data-mining\code\Real Estate Price Predictor\Visualizator\bin\Debug\System.Device.Portable.dll

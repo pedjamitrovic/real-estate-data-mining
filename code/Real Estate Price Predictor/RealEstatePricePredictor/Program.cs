@@ -14,11 +14,14 @@ namespace RealEstatePricePredictor
             // ScrapeAsync().Wait();
 
             // Phase 4
-            var model = new LinearRegression(500, 50, 1e-5, 0.2);
-            model.Fit();
-            model.PredictAndLogTestResults();
+            // var model = new LinearRegression(500, 50, 1e-5, 0.2);
+            // model.Fit();
+            // model.PredictAndLogTestResults();
 
             // Phase 5
+            var model = new KNN(0.2);
+            model.Fit();
+            model.PredictAndLogTestResults();
 
             Console.ReadLine();
         }

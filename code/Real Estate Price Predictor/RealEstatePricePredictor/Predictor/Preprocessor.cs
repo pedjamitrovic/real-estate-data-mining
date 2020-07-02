@@ -15,7 +15,7 @@ namespace RealEstatePricePredictor
             {
                 var flatsForSale = db.RealEstates.Where(re => re.City == "Beograd" && re.HousingType == 0 && re.OfferType == 0);
                 int totalCount = flatsForSale.Count();
-                int splitIndex = Convert.ToInt32(Math.Floor(totalCount * testSize));
+                int splitIndex = Convert.ToInt32(Math.Floor(totalCount * (1 - testSize)));
 
                 var instances = flatsForSale
                     .Join(
@@ -39,8 +39,8 @@ namespace RealEstatePricePredictor
                     });
 
                 var instancesCount = instances.Count();
-                Train = instances.Take(totalCount - splitIndex).ToList();
-                Test = instances.Skip(totalCount - splitIndex).ToList();
+                Train = instances.Take(splitIndex).ToList();
+                Test = instances.Skip(splitIndex).ToList();
             }
             Console.WriteLine("Preprocessing finished");
         }

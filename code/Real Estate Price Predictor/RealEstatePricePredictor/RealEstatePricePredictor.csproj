@@ -81,6 +81,7 @@
     <Compile Include="Model\Instance.cs" />
     <Compile Include="Model\NeighborhoodDistance.cs" />
     <Compile Include="Model\RealEstate.cs" />
+    <Compile Include="Predictor\KNN.cs" />
     <Compile Include="Predictor\LinearRegression.cs" />
     <Compile Include="Predictor\Metrics.cs" />
     <Compile Include="Predictor\Preprocessor.cs" />
