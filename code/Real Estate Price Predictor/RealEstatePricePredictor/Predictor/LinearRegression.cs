@@ -8,7 +8,6 @@ namespace RealEstatePricePredictor
         public int Iterations;
         public int Steps;
         public double L;
-        public double TestSize;
 
         public double[] W;
         public List<Instance> Train;
@@ -17,16 +16,14 @@ namespace RealEstatePricePredictor
         private readonly int N; // Num of features + 1
         private readonly Metrics Metrics = new Metrics();
 
-        public LinearRegression(int iterations, int steps, double learningRate, double testSize)
+        public LinearRegression(int iterations, int steps, double learningRate, List<Instance> train, List<Instance> test)
         {
             Iterations = iterations;
             Steps = steps;
             L = learningRate;
-            TestSize = testSize;
 
-            var preprocessor = new Preprocessor(testSize);
-            Train = preprocessor.Train;
-            Test = preprocessor.Test;
+            Train = train;
+            Test = test;
 
             N = Train[0].Data.Length;
 
@@ -45,15 +42,15 @@ namespace RealEstatePricePredictor
             {
                 List<double> predictions = Predict(Train);
                 UpdateW(predictions);
-                if (i % Steps == 0)
-                {
-                    ComputeCost(predictions);
-                    Console.Write($"Iteration {i} elapsed -> Cost function value = {ComputeCost(predictions).ToString("0.##")} -> RMSE = {Metrics.RMSE(predictions, Train).ToString("0.##")} -> W[] = [ ");
-                    foreach(var w in W) {
-                        Console.Write($"{w.ToString("0.##")} ");
-                    }
-                    Console.WriteLine("]");
-                }
+                //if (i % Steps == 0)
+                //{
+                //    ComputeCost(predictions);
+                //    Console.Write($"Iteration {i} elapsed -> Cost function value = {ComputeCost(predictions).ToString("0.##")} -> RMSE = {Metrics.RMSE(predictions, Train).ToString("0.##")} -> W[] = [ ");
+                //    foreach(var w in W) {
+                //        Console.Write($"{w.ToString("0.##")} ");
+                //    }
+                //    Console.WriteLine("]");
+                //}
             }
             Console.WriteLine("Training finished");
         }

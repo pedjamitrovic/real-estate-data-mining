@@ -5,7 +5,6 @@ namespace RealEstatePricePredictor
 {
     public class KNN
     {
-        public double TestSize;
         public int K;
 
         public List<Instance> Train;
@@ -14,19 +13,16 @@ namespace RealEstatePricePredictor
         private readonly Metrics Metrics = new Metrics();
         private readonly int ClassCount = 5;
 
-        public KNN(double testSize)
+        public KNN(List<Instance> train, List<Instance> test)
         {
-            TestSize = testSize;
-
-            var preprocessor = new Preprocessor(testSize);
-            Train = preprocessor.Train;
-            Test = preprocessor.Test;
+            Train = train;
+            Test = test;
 
             K = (int)Math.Sqrt(Train.Count);
             if (K % 2 == 0) { K += 1; }
         }
 
-        public KNN(int k, double testSize): this(testSize)
+        public KNN(int k, List<Instance> train, List<Instance> test): this(train, test)
         {
             if (k > 0)
             {
@@ -83,7 +79,7 @@ namespace RealEstatePricePredictor
 
         public double Distance(Instance first, Instance second)
         {
-            return EuclideanDistance(first, second);
+            return ManhattanDistance(first, second);
         }
 
         public double EuclideanDistance(Instance first, Instance second)
@@ -130,7 +126,7 @@ namespace RealEstatePricePredictor
         {
             Console.WriteLine("Test prediction started");
             var predictions = Predict(Test);
-            // Console.WriteLine($"Test -> RMSE = {Metrics.RMSE(predictions, Test).ToString("0.##")}");
+            Console.WriteLine($"Test -> Macro Average = {Metrics.MacroAverage(predictions, Test).ToString("0.###")}");
             Console.WriteLine($"First {logCount} predictions:");
             for (int i = 0; i < logCount; ++i)
             {
