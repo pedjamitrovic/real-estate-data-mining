@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Device.Location;
+using System.Globalization;
 
 namespace RealEstatePricePredictor
 {
@@ -13,24 +14,32 @@ namespace RealEstatePricePredictor
             // CrawlAsync().Wait();
             // ScrapeAsync().Wait();
 
-            var preprocessor = new Preprocessor(0.2);
-
             // Phase 4
-            // var model = new LinearRegression(500, 50, 1e-5, 0.2);
-            // model.Fit();
-            // model.PredictAndLogTestResults();
-            // Console.ReadLine();
+            //var preprocessor = new Preprocessor(0.2);
+            //var model = new LinearRegression(500, 50, 1, preprocessor);
+            //model.Fit();
+            //model.PredictAndLogTestResults();
+            //Console.ReadLine();
 
             // Phase 5
-            // var model = new KNN(0.2);
-            // model.Fit();
-            // model.PredictAndLogTestResults();
-            // Console.ReadLine();
+            //var preprocessor = new Preprocessor(0.2);
+            //var model = new KNN(preprocessor);
+            //model.Fit();
+            //model.PredictAndLogTestResults();
+            //Console.ReadLine();
+
+            InteractWithUser();
+        }
+
+        public static void InteractWithUser()
+        {
+            var preprocessor = new Preprocessor(0.2);
 
             Console.WriteLine("Training models");
-            var linearRegressionModel = new LinearRegression(500, 50, 1e-5, preprocessor.Train, preprocessor.Test);
+            var linearRegressionModel = new LinearRegression(500, 50, 1, preprocessor);
             linearRegressionModel.Fit();
-            var knnModel = new KNN(preprocessor.Train, preprocessor.Test);
+            linearRegressionModel.PredictAndLogTestResults(0);
+            var knnModel = new KNN(preprocessor);
             knnModel.Fit();
             Console.WriteLine("Models trained");
 
@@ -38,6 +47,7 @@ namespace RealEstatePricePredictor
             {
                 try
                 {
+                    Console.WriteLine();
                     Console.WriteLine("Real estate price predictor");
                     Console.WriteLine("1. Linear regression");
                     Console.WriteLine("2. K-Nearest neighbours");
@@ -65,8 +75,9 @@ namespace RealEstatePricePredictor
 
             if (instance != null)
             {
+                model.P.Normalize(instance);
                 double predicted = model.Predict(instance);
-                Console.WriteLine($"Predicted price -> {predicted}");
+                Console.WriteLine($"Predicted price -> {Math.Exp(model.P.DenormalizedPrice(predicted) - 1).ToString("0.")}");
             }
         }
 
@@ -86,6 +97,7 @@ namespace RealEstatePricePredictor
 
                 if (instance != null)
                 {
+                    model.P.Normalize(instance);
                     int predicted = model.Predict(instance);
 
                     if (predicted == 0)
@@ -124,7 +136,7 @@ namespace RealEstatePricePredictor
                 //public double Floor;
                 //public double RoomCount;
 
-                Console.WriteLine("Enter distance, quadrature, registered (0 or 1), floor, room count separated by one space: ");
+                Console.WriteLine("Enter distance in km, quadrature, floor, room count separated by one space: ");
                 string line = Console.ReadLine();
                 string[] values = line.Split(' ');
 
@@ -133,15 +145,14 @@ namespace RealEstatePricePredictor
                     Data = new double[]
                         {
                             0,
-                            Convert.ToDouble(values[0]),
-                            Convert.ToDouble(values[1]),
-                            Convert.ToDouble(values[2]),
-                            Convert.ToDouble(values[3]),
-                            Convert.ToDouble(values[4]),
+                            Convert.ToDouble(values[0], CultureInfo.InvariantCulture),
+                            Convert.ToDouble(values[1], CultureInfo.InvariantCulture),
+                            Convert.ToDouble(values[2], CultureInfo.InvariantCulture),
+                            Convert.ToDouble(values[3], CultureInfo.InvariantCulture),
                         }
                 };
 
-                Console.WriteLine($"Entered data -> [ D = {instance.Data[1]}, Q = {instance.Data[2]}, R = {instance.Data[3]}, F = {instance.Data[4]}, RC = {instance.Data[5]} ]");
+                Console.WriteLine($"Entered data -> [ D = {instance.Data[1]}, Q = {instance.Data[2]}, F = {instance.Data[3]}, RC = {instance.Data[4]} ]");
 
                 return instance;
             }

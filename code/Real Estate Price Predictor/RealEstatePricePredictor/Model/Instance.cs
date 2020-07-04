@@ -11,35 +11,36 @@ namespace RealEstatePricePredictor
         //public double Price;
         //public double Distance;
         //public double Quadrature;
-        //public double Registered;
         //public double Floor;
         //public double RoomCount;
         public double[] Data;
+
+        public double OriginalPrice;
 
         public int PriceRange
         {
             get
             {
-                double val = Data[0];
-                if (val < 50000)
+                if (OriginalPrice < 50000)
                 {
                     return 0;
                 }
-                else if (val < 100000)
+                else if (OriginalPrice < 100000)
                 {
                     return 1;
                 }
-                else if (val < 150000)
+                else if (OriginalPrice < 150000)
                 {
                     return 2;
                 }
-                else if (val < 200000)
+                else if (OriginalPrice < 200000)
                 {
                     return 3;
                 }
                 else return 4;
             }
         }
+
 
         public new String ToString()
         {

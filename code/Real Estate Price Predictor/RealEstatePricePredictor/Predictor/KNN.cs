@@ -9,20 +9,22 @@ namespace RealEstatePricePredictor
 
         public List<Instance> Train;
         public List<Instance> Test;
+        public Preprocessor P;
 
         private readonly Metrics Metrics = new Metrics();
         private readonly int ClassCount = 5;
 
-        public KNN(List<Instance> train, List<Instance> test)
+        public KNN(Preprocessor p)
         {
-            Train = train;
-            Test = test;
+            Train = p.Train;
+            Test = p.Test;
+            P = p;
 
             K = (int)Math.Sqrt(Train.Count);
             if (K % 2 == 0) { K += 1; }
         }
 
-        public KNN(int k, List<Instance> train, List<Instance> test): this(train, test)
+        public KNN(int k, Preprocessor p) : this(p)
         {
             if (k > 0)
             {
