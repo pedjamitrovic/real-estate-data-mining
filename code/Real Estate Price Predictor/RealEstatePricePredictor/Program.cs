@@ -16,14 +16,14 @@ namespace RealEstatePricePredictor
 
             // Phase 4
             //var preprocessor = new Preprocessor(0.2);
-            //var model = new LinearRegression(500, 50, 1, preprocessor);
+            //var model = new LinearRegression(500, 50, 0.5, preprocessor);
             //model.Fit();
             //model.PredictAndLogTestResults();
             //Console.ReadLine();
 
             // Phase 5
             //var preprocessor = new Preprocessor(0.2);
-            //var model = new KNN(preprocessor);
+            //var model = new KNN(1, preprocessor);
             //model.Fit();
             //model.PredictAndLogTestResults();
             //Console.ReadLine();
@@ -36,11 +36,12 @@ namespace RealEstatePricePredictor
             var preprocessor = new Preprocessor(0.2);
 
             Console.WriteLine("Training models");
-            var linearRegressionModel = new LinearRegression(500, 50, 1, preprocessor);
+            var linearRegressionModel = new LinearRegression(500, 50, 0.5, preprocessor);
             linearRegressionModel.Fit();
             linearRegressionModel.PredictAndLogTestResults(0);
-            var knnModel = new KNN(preprocessor);
+            var knnModel = new KNN(1, preprocessor);
             knnModel.Fit();
+            knnModel.PredictAndLogTestResults(0);
             Console.WriteLine("Models trained");
 
             while (true)
@@ -86,7 +87,7 @@ namespace RealEstatePricePredictor
             try
             {
                 Console.WriteLine($"Current K is {model.K}");
-                Console.Write("Enter new K or 0 to continue with default value: ");
+                Console.Write("Enter new K or 0 to continue with current value: ");
                 int k = Convert.ToInt32(Console.ReadLine());
                 if (k > 0)
                 {

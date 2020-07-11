@@ -1,25 +1,25 @@
 2)
 
 a.
-SELECT COUNT(*) FROM RealEstates WHERE OfferType = 0;
-SELECT COUNT(*) FROM RealEstates WHERE OfferType = 1;
+SELECT COUNT(*) as SellingCount FROM RealEstates WHERE OfferType = 0;
+SELECT COUNT(*) as RentingCount FROM RealEstates WHERE OfferType = 1;
 
 b.
 SELECT City, COUNT(*) as SellingCount FROM RealEstates WHERE OfferType = 0 GROUP BY City ORDER BY SellingCount DESC;
 
 c.
-SELECT COUNT(*) FROM RealEstates WHERE HousingType = 0 AND Registered = 0;
-SELECT COUNT(*) FROM RealEstates WHERE HousingType = 0 AND Registered = 1;
-SELECT COUNT(*) FROM RealEstates WHERE HousingType = 1 AND Registered = 0;
-SELECT COUNT(*) FROM RealEstates WHERE HousingType = 1 AND Registered = 1;
+SELECT COUNT(*) as SellingNotRegistered FROM RealEstates WHERE HousingType = 0 AND Registered = 0;
+SELECT COUNT(*) as SellingRegistered FROM RealEstates WHERE HousingType = 0 AND Registered = 1;
+SELECT COUNT(*) as RentingNotRegistered FROM RealEstates WHERE HousingType = 1 AND Registered = 0;
+SELECT COUNT(*) as RentingRegistered FROM RealEstates WHERE HousingType = 1 AND Registered = 1;
 
 d.
-SELECT TOP(20) * FROM RealEstates WHERE HousingType = 0 ORDER BY Price DESC;
-SELECT TOP(20) * FROM RealEstates WHERE HousingType = 1 ORDER BY Price DESC;
+SELECT TOP(20) * FROM RealEstates WHERE HousingType = 0 ORDER BY Price DESC; --stanovi
+SELECT TOP(20) * FROM RealEstates WHERE HousingType = 1 ORDER BY Price DESC; --kuce
 
 e.
-SELECT TOP(100) * FROM RealEstates WHERE HousingType = 0 AND OfferType = 1 ORDER BY Price DESC;
-SELECT TOP(100) * FROM RealEstates WHERE HousingType = 1 AND OfferType = 1 ORDER BY Price DESC;
+SELECT TOP(100) * FROM RealEstates WHERE HousingType = 0 AND OfferType = 1 ORDER BY Price DESC; --stanovi
+SELECT TOP(100) * FROM RealEstates WHERE HousingType = 1 AND OfferType = 1 ORDER BY Price DESC; --kuce
 
 f.
 SELECT * FROM RealEstates WHERE YearBuilt = 2019 AND OfferType = 0 ORDER BY Price DESC;

@@ -25,6 +25,7 @@ namespace RealEstatePricePredictor
                     nd => nd.Neighborhood,
                     (re, nd) => new { nd.Distance, re.Quadrature, re.Floor, re.RoomCount, re.Price }
                     )
+                    .OrderBy(x => Guid.NewGuid()) // Shuffle
                     .AsEnumerable()
                     .Select(e => new Instance
                     {

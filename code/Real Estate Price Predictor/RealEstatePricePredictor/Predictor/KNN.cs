@@ -126,15 +126,15 @@ namespace RealEstatePricePredictor
 
         public void PredictAndLogTestResults(int logCount = 50)
         {
-            Console.WriteLine("Test prediction started");
+            Console.WriteLine("Test prediction started - KNN");
             var predictions = Predict(Test);
             Console.WriteLine($"Test -> Macro Average = {Metrics.MacroAverage(predictions, Test).ToString("0.###")}");
-            Console.WriteLine($"First {logCount} predictions:");
+            if (logCount > 0) Console.WriteLine($"First {logCount} predictions:");
             for (int i = 0; i < logCount; ++i)
             {
                 Console.WriteLine($"[{i + 1}] -> Predicted: {predictions[i]} / Expected: {Test[i].PriceRange}");
             }
-            Console.WriteLine("Test prediction finished");
+            Console.WriteLine("Test prediction finished - KNN");
         }
     }
 }

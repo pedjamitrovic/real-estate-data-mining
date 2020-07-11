@@ -8,15 +8,15 @@ namespace RealEstatePricePredictor
 {
     public class Metrics
     {
-        public double RMSE(List<double> predictions, List<Instance> set)
+        public double RMSE(List<double> predictions, List<Instance> set, Preprocessor p)
         {
             double sum = 0;
             int m = predictions.Count;
 
             for (int i = 0; i < m; ++i)
             {
-                double predicted = predictions[i];
-                double expected = set[i].Data[0];
+                double predicted = Math.Exp(p.DenormalizedPrice(predictions[i]) - 1);
+                double expected = Math.Exp(p.DenormalizedPrice(set[i].Data[0]) - 1);
                 sum += Math.Pow(predicted - expected, 2);
             }
 
