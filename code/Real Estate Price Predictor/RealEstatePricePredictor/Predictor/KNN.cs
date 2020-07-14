@@ -128,7 +128,7 @@ namespace RealEstatePricePredictor
         {
             Console.WriteLine("Test prediction started - KNN");
             var predictions = Predict(Test);
-            Console.WriteLine($"Test -> Macro Average = {Metrics.MacroAverage(predictions, Test).ToString("0.###")}");
+            Console.WriteLine($"Test -> K = {K} Macro Average = {Metrics.MacroAverage(predictions, Test).ToString("0.###")}");
             if (logCount > 0) Console.WriteLine($"First {logCount} predictions:");
             for (int i = 0; i < logCount; ++i)
             {

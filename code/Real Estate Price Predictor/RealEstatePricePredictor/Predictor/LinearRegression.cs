@@ -1,31 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RealEstatePricePredictor
 {
     public class LinearRegression
     {
-        public int Steps;
         public int StepLogCount;
         public double L;
 
         public double[] W;
         public List<Instance> Train;
+        public List<Instance> Validation;
         public List<Instance> Test;
         public Preprocessor P;
 
         private readonly int N; // Num of features + 1
         private readonly Metrics Metrics = new Metrics();
 
-        public LinearRegression(int steps, int stepLogCount, double learningRate, Preprocessor p)
+        public LinearRegression(int stepLogCount, double learningRate, Preprocessor p)
         {
-            Steps = steps;
             StepLogCount = stepLogCount;
             L = learningRate;
             P = p;
 
-            Train = p.Train;
             Test = p.Test;
+
+            // Validation
+            int splitIndex = Convert.ToInt32(Math.Floor(p.Train.Count * 0.2));
+            Train = p.Train.Take(splitIndex).ToList();
+            Validation = p.Train.Skip(splitIndex).ToList();
 
             N = Train[0].Data.Length;
 
@@ -39,21 +43,27 @@ namespace RealEstatePricePredictor
 
         public void Fit()
         {
+            var max = double.PositiveInfinity;
             Console.WriteLine("Training started - LR");
-            for (int i = 1; i < Steps + 1; ++i)
+            var i = 0;
+            while(true)
             {
-                List<double> predictions = Predict(Train);
-                UpdateW(predictions);
-                if (i % StepLogCount == 0)
+                List<double> trainPred = Predict(Train);
+                UpdateW(trainPred);
+
+                List<double> valPred = Predict(Validation);
+                var validationRMSE = Metrics.RMSE(valPred, Validation, P);
+                if (++i % StepLogCount == 0)
                 {
-                    ComputeCost(predictions);
-                    Console.Write($"Iteration {i} elapsed -> RMSE = {Metrics.RMSE(predictions, Train, P).ToString("0.")} -> W[] = [ ");
+                    Console.Write($"Iteration {i} elapsed -> Train RMSE = {Metrics.RMSE(trainPred, Train, P).ToString("0.")} | Val RMSE = {validationRMSE.ToString("0.")} -> W[] = [ ");
                     foreach (var w in W)
                     {
                         Console.Write($"{w.ToString("0.###")} ");
                     }
                     Console.WriteLine("]");
                 }
+                if (validationRMSE >= max) break; // Overfitting
+                else max = validationRMSE;
             }
             Console.WriteLine("Training finished - LR");
         }
@@ -118,21 +128,6 @@ namespace RealEstatePricePredictor
             {
                 W[j] = W[j] - (L / m) * (sums[j]);
             }
-        }
-
-        private double ComputeCost(List<double> predictions)
-        {
-            double sum = 0;
-            int m = predictions.Count;
-
-            for (int i = 0; i < m; ++i)
-            {
-                double predicted = predictions[i];
-                double expected = Train[i].Data[0];
-                sum += Math.Pow(predicted - expected, 2);
-            }
-
-            return sum / (2 * m);
         }
     }
 }

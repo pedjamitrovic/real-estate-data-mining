@@ -25,7 +25,6 @@ namespace RealEstatePricePredictor
                     nd => nd.Neighborhood,
                     (re, nd) => new { nd.Distance, re.Quadrature, re.Floor, re.RoomCount, re.Price }
                     )
-                    .OrderBy(x => Guid.NewGuid()) // Shuffle
                     .AsEnumerable()
                     .Select(e => new Instance
                     {
@@ -38,7 +37,9 @@ namespace RealEstatePricePredictor
                             Convert.ToDouble(e.RoomCount),
                         },
                         OriginalPrice = e.Price
-                    });
+                    }).ToList();
+
+                instances.Shuffle();
 
                 Train = instances.Take(splitIndex).ToList();
                 Test = instances.Skip(splitIndex).ToList();
@@ -114,6 +115,26 @@ namespace RealEstatePricePredictor
         public double DenormalizedPrice(double normalizedPrice)
         {
             return columnMin[0] + normalizedPrice * (columnMax[0] - columnMin[0]);
+        }
+
+        
+    }
+
+    public static class ShuffleExtension
+    {
+        public static void Shuffle<T>(this List<T> list)
+        {
+            Random random = new Random();
+            int n = list.Count();
+
+            for (int i = n - 1; i > 1; i--)
+            {
+                int rnd = random.Next(i + 1);
+
+                T value = list[rnd];
+                list[rnd] = list[i];
+                list[i] = value;
+            }
         }
     }
 }

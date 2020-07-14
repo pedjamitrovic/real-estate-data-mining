@@ -16,7 +16,7 @@ namespace RealEstatePricePredictor
 
             // Phase 4
             //var preprocessor = new Preprocessor(0.2);
-            //var model = new LinearRegression(500, 50, 0.5, preprocessor);
+            //var model = new LinearRegression(50, 0.5, preprocessor);
             //model.Fit();
             //model.PredictAndLogTestResults();
             //Console.ReadLine();
@@ -24,8 +24,11 @@ namespace RealEstatePricePredictor
             // Phase 5
             //var preprocessor = new Preprocessor(0.2);
             //var model = new KNN(1, preprocessor);
-            //model.Fit();
-            //model.PredictAndLogTestResults();
+            //do
+            //{
+            //    model.PredictAndLogTestResults(0);
+            //}
+            //while (++model.K < 10);
             //Console.ReadLine();
 
             InteractWithUser();
@@ -36,10 +39,10 @@ namespace RealEstatePricePredictor
             var preprocessor = new Preprocessor(0.2);
 
             Console.WriteLine("Training models");
-            var linearRegressionModel = new LinearRegression(500, 50, 0.5, preprocessor);
+            var linearRegressionModel = new LinearRegression(50, 0.5, preprocessor);
             linearRegressionModel.Fit();
             linearRegressionModel.PredictAndLogTestResults(0);
-            var knnModel = new KNN(1, preprocessor);
+            var knnModel = new KNN(preprocessor);
             knnModel.Fit();
             knnModel.PredictAndLogTestResults(0);
             Console.WriteLine("Models trained");
