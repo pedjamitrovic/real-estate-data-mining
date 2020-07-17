@@ -6,17 +6,17 @@ namespace RealEstatePricePredictor
 {
     public class Preprocessor
     {
-        public List<Instance> Train;
-        public List<Instance> Test;
+        public List<Instance> Train = new List<Instance>();
+        public List<Instance> Validation = new List<Instance>();
+        public List<Instance> Test = new List<Instance>();
         public double[] columnMin;
         public double[] columnMax;
-        public Preprocessor(double testSize)
+        public Preprocessor(double validationSize = 0.2, double testSize = 0.2)
         {
             Console.WriteLine("Preprocessing started");
             using (var db = new RealEstateContext())
             {
-                var flatsForSale = db.RealEstates.Where(re => re.City == "Beograd" && re.HousingType == 0 && re.OfferType == 0);
-                int splitIndex = Convert.ToInt32(Math.Floor(flatsForSale.Count() * (1 - testSize)));
+                var flatsForSale = db.RealEstates.Where(re => re.City == "Beograd" && re.HousingType == 0 && re.OfferType == 0).OrderBy((a) => a.Price);
 
                 var instances = flatsForSale
                     .Join(
@@ -41,11 +41,29 @@ namespace RealEstatePricePredictor
 
                 instances.Shuffle();
 
-                Train = instances.Take(splitIndex).ToList();
-                Test = instances.Skip(splitIndex).ToList();
+                List<Instance>[] instancesByRanges = new List<Instance>[5];
+                for (int i = 0; i < 5; ++i)
+                {
+                    instancesByRanges[i] = new List<Instance>();
+                }
+
+                instances.ToList().ForEach((i) => instancesByRanges[i.PriceRange].Add(i));
+
+
+                for (int i = 0; i < 5; ++i)
+                {
+                    int testCount = Convert.ToInt32(Math.Floor(instancesByRanges[i].Count() * testSize));
+                    int validationCount = Convert.ToInt32(Math.Floor(instancesByRanges[i].Count() * validationSize));
+                    Test.AddRange(instancesByRanges[i].GetRange(0, testCount));
+                    instancesByRanges[i].RemoveRange(0, testCount);
+                    Validation.AddRange(instancesByRanges[i].GetRange(0, validationCount));
+                    instancesByRanges[i].RemoveRange(0, validationCount);
+                    Train.AddRange(instancesByRanges[i]);
+                }
 
                 CalculateNormalizationValues(Train);
                 Normalize(Train);
+                Normalize(Validation);
                 Normalize(Test);
             }
             Console.WriteLine("Preprocessing finished");

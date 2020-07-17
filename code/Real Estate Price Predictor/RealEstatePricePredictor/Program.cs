@@ -15,14 +15,14 @@ namespace RealEstatePricePredictor
             // ScrapeAsync().Wait();
 
             // Phase 4
-            //var preprocessor = new Preprocessor(0.2);
+            //var preprocessor = new Preprocessor();
             //var model = new LinearRegression(50, 0.5, preprocessor);
             //model.Fit();
             //model.PredictAndLogTestResults();
             //Console.ReadLine();
 
             // Phase 5
-            //var preprocessor = new Preprocessor(0.2);
+            //var preprocessor = new Preprocessor();
             //var model = new KNN(1, preprocessor);
             //do
             //{
@@ -36,7 +36,7 @@ namespace RealEstatePricePredictor
 
         public static void InteractWithUser()
         {
-            var preprocessor = new Preprocessor(0.2);
+            var preprocessor = new Preprocessor();
 
             Console.WriteLine("Training models");
             var linearRegressionModel = new LinearRegression(50, 0.5, preprocessor);

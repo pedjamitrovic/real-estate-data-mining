@@ -26,10 +26,9 @@ namespace RealEstatePricePredictor
 
             Test = p.Test;
 
-            // Validation
-            int splitIndex = Convert.ToInt32(Math.Floor(p.Train.Count * 0.2));
-            Train = p.Train.Take(splitIndex).ToList();
-            Validation = p.Train.Skip(splitIndex).ToList();
+            Train = p.Train;
+            Validation = p.Validation;
+            Test = p.Test;
 
             N = Train[0].Data.Length;
 
@@ -43,27 +42,49 @@ namespace RealEstatePricePredictor
 
         public void Fit()
         {
-            var max = double.PositiveInfinity;
+            var trainMax = double.PositiveInfinity;
+            var valMax = double.PositiveInfinity;
             Console.WriteLine("Training started - LR");
             var i = 0;
+            var errorRisingCount = 0;
             while(true)
             {
+                List<double> valPred = Predict(Validation);
                 List<double> trainPred = Predict(Train);
+
                 UpdateW(trainPred);
 
-                List<double> valPred = Predict(Validation);
-                var validationRMSE = Metrics.RMSE(valPred, Validation, P);
+                var valRMSE = Metrics.RMSE(valPred, Validation, P);
+                var trainRMSE = Metrics.RMSE(trainPred, Train, P);
+
                 if (++i % StepLogCount == 0)
                 {
-                    Console.Write($"Iteration {i} elapsed -> Train RMSE = {Metrics.RMSE(trainPred, Train, P).ToString("0.")} | Val RMSE = {validationRMSE.ToString("0.")} -> W[] = [ ");
+                    Console.Write($"Iteration {i} elapsed -> Train RMSE = {trainRMSE.ToString("0.")} | Val RMSE = {valRMSE.ToString("0.")} -> W[] = [ ");
                     foreach (var w in W)
                     {
                         Console.Write($"{w.ToString("0.###")} ");
                     }
                     Console.WriteLine("]");
                 }
-                if (validationRMSE >= max) break; // Overfitting
-                else max = validationRMSE;
+                if (valRMSE >= valMax || trainRMSE >= trainMax)
+                {
+                    if(++errorRisingCount > 10)
+                    {
+                        break; // Overfitting
+                    }
+                }
+                else
+                {
+                    if (trainRMSE < trainMax)
+                    {
+                        trainMax = trainRMSE;
+                    }
+                    if (valRMSE < valMax)
+                    {
+                        valMax = valRMSE;
+                    }
+                    errorRisingCount = 0;
+                }
             }
             Console.WriteLine("Training finished - LR");
         }
@@ -90,6 +111,27 @@ namespace RealEstatePricePredictor
 
         public void PredictAndLogTestResults(int logCount = 50)
         {
+            Console.WriteLine($"Train - Val - Test");
+            Console.WriteLine($"{Train.Count} - {Validation.Count} - {Test.Count}");
+            double[] tr = new double[5];
+            for (int i = 0; i < Train.Count; ++i)
+            {
+                ++tr[Train[i].PriceRange];
+            }
+            double[] val = new double[5];
+            for (int i = 0; i < Validation.Count; ++i)
+            {
+                ++val[Validation[i].PriceRange];
+            }
+            double[] te = new double[5];
+            for (int i = 0; i < Test.Count; ++i)
+            {
+                ++te[Test[i].PriceRange];
+            }
+            for (int i = 0; i < 5; ++i)
+            {
+                Console.WriteLine($"{tr[i]} - {val[i]} - {te[i]}");
+            }
             Console.WriteLine("Test prediction started - LR");
             var predictions = Predict(Test);
             Console.WriteLine($"Test -> RMSE = {Metrics.RMSE(predictions, Test, P).ToString("0.")}");

@@ -17,6 +17,7 @@ namespace RealEstatePricePredictor
         public KNN(Preprocessor p)
         {
             Train = p.Train;
+            Train.AddRange(p.Validation);
             Test = p.Test;
             P = p;
 
